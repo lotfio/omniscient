@@ -72,7 +72,7 @@ class Assets extends Command implements CommandInterface
         chdir($pub); // switch to public folder
 
         if(is_link("assets"))
-            system("rmdir assets");
+            (PHP_OS == 'WINNT') ? system("rmdir assets") : unlink("assets");
 
         if(symlink($assets, "assets"))
             return $this->output->writeLn("\n assets has been published to the public folder.\n\n", "green");
