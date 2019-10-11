@@ -11,8 +11,9 @@
 
     "require": {
         "php": "^7.2",
-        "lotfio/oofile" : "^0.1.0",
-        "lotfio/conso" : "^0.2.0"
+        "lotfio/oofile"  : "^0.1",
+        "lotfio/conso"   : "^0.2",
+        "lotfio/caprice" : "^0.1"
     },
 
     "require-dev": {
