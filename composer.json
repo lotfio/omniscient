@@ -11,8 +11,8 @@
 
     "require": {
         "php": "^7.2",
-        "lotfio/aven"    : "dev-develop",
         "lotfio/oofile"  : "dev-develop",
+        "lotfio/aven"    : "^0.3.0",
         "lotfio/ouch"    : "^0.3.1",
         "lotfio/conso"   : "^0.2",
         "lotfio/caprice" : "^0.4"
