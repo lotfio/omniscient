@@ -13,7 +13,7 @@ namespace Omniscient\Console\Commands;
  * @time      Generated at 30-08-2019 by conso
  */
 
-use OoFile\DotEnv;
+use OoFile\Env as OoEnv;
 use Conso\Command;
 use Conso\Contracts\CommandInterface;
 use Conso\Exceptions\{OptionNotFoundException, FlagNotFoundException, RunTimeException};
@@ -71,7 +71,7 @@ class Env extends Command implements CommandInterface
         }
 
         $this->output->writeLn("\n Your application is on ");
-        env('APP_ENV') == 'dev' ?
+        _env('APP_ENV') == 'dev' ?
             $this->output->writeLn("development mode\n\n", 'green')
         :   $this->output->writeLn("production mode\n\n", 'green');
     }
@@ -83,7 +83,7 @@ class Env extends Command implements CommandInterface
      */
     private function init()
     {
-        $dotEnv = new DotEnv;
+        $dotEnv = new OoEnv;
 
         $this->env["APP_DEBUG"]     = 'true';
         $this->env[1]               = 'SEPARATOR';
@@ -122,7 +122,7 @@ class Env extends Command implements CommandInterface
     private function setDevelopmentMode()
     {
         $this->env["APP_ENV"] = 'dev';
-        $this->env["APP_KEY"] = env("APP_KEY"); // don't change app key when switching env
+        $this->env["APP_KEY"] = _env("APP_KEY"); // don't change app key when switching env
         $this->init();
         return $this->output->writeLn("\n Silo environment has been set to Development \n\n");
     }
@@ -135,7 +135,7 @@ class Env extends Command implements CommandInterface
     private function setProductionMode()
     {
         $this->env["APP_ENV"] = 'pro';
-        $this->env["APP_KEY"] = env("APP_KEY"); // don't change app key when switching env
+        $this->env["APP_KEY"] = _env("APP_KEY"); // don't change app key when switching env
         $this->init();
         return $this->output->writeLn("\n Silo environment has been set to Production \n\n");
     }

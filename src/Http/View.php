@@ -15,7 +15,7 @@ class View
 {
     /**
      * render view method using caprice templating engine
-     * 
+     *
      * @param  string $file
      * @param  mixed  $data
      * @return void
@@ -24,7 +24,7 @@ class View
     {
         $caprice  = new Compiler(Conf::path("views"), Conf::path("cache") . "views");
 
-        if(env("APP_ENV") != "dev")
+        if(_env("APP_ENV") != "dev")
             $caprice->setProductionMode();
 
         $compiled = $caprice->compile($file);
