@@ -41,9 +41,6 @@
         "lotfio/conso"  : "dev-local"
     },
 
-    "require-dev": {
-    },
-
     "autoload": {
         "files": [
             "src/Support/helpers.php"
