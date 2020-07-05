@@ -63,10 +63,12 @@ class Serve extends Command implements CommandInterface
          */
         $this->checkAvailablePort();
 
-        $command = "php -S " . $this->host . ":" . $this->port . " -t " . Conf::path('pub');
+        $host    = _env('APP_HOST',$this->host);
+        $port    = _env('APP_PORT',$this->port);
+        $command = "php -S " . $host . ":" . $port . " -t " . Conf::path('pub');
 
         $this->output->writeLn("\n Starting development server : \n", "yellow");
-        $this->output->writeLn(" You can now visit <http://$this->host:$this->port> \n\n", "yellow");
+        $this->output->writeLn(" You can now visit <http://$host:$port> \n\n", "yellow");
 
         return  passthru($command);
     }
