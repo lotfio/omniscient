@@ -11,36 +11,6 @@
 
     "minimum-stability": "dev",
 
-    "repositories": [
-        {
-            "packagist.org": false
-        },
-        {
-            "type": "vcs",
-            "url": "C:\\Users\\dell\\Desktop\\own\\silo\\lotfio-oofile"
-        },
-        {
-            "type": "vcs",
-            "url": "C:\\Users\\dell\\Desktop\\own\\silo\\lotfio-ouch"
-        },
-        {
-            "type": "vcs",
-            "url": "C:\\Users\\dell\\Desktop\\own\\silo\\lotfio-aven"
-        },
-        {
-            "type": "vcs",
-            "url": "C:\\Users\\dell\\Desktop\\own\\silo\\lotfio-conso"
-        }
-    ],
-
-    "require": {
-        "php": "^7.2",
-        "lotfio/oofile" : "dev-local",
-        "lotfio/ouch"   : "dev-local",
-        "lotfio/aven"   : "dev-local",
-        "lotfio/conso"  : "dev-local"
-    },
-
     "autoload": {
         "files": [
             "src/Support/helpers.php"

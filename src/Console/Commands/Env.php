@@ -28,16 +28,11 @@ class Env extends Command implements CommandInterface
     protected $flags = [];
 
     /**
-     * environment values
+     * environment object
      *
      * @var array
      */
-    private $env = array(
-        "APP_NAME"      => "Silo",
-        "APP_ENV"       => "dev",
-        "APP_KEY"       => '',
-        "APP_VERSION"   => '1.0'
-    );
+    private $env;
 
     /**
      * command description method
@@ -56,17 +51,18 @@ class Env extends Command implements CommandInterface
      */
     public function execute(string $sub, array $options, array $flags)
     {
+        // set up env object
+        $this->env = new  OoEnv('C:\Users\dell\Desktop\own\silo\lotfio-silo');
+
         if(!empty($sub))
         {
             switch($sub)
             {
-                case 'init' : $this->generateAppKey(); $this->init();
-                    $this->output->writeLn("\n Silo environment has been initialized\n\n");
-                    exit;
-                break;
-                case 'dev'  : $this->setDevelopmentMode();  exit; break;
-                case 'pro'  : $this->setProductionMode();   exit;  break;
-                default     : throw new RunTimeException("Error sub command $sub not recognized\n\n"); break; break;
+                case 'init'         : $this->init();                exit; break;
+                case 'keygen'       : $this->generateAppKey();      exit; break;
+                case 'dev'          : $this->setDevelopmentMode();  exit; break;
+                case 'pro'          : $this->setProductionMode();   exit;  break;
+                default             : throw new RunTimeException("Error sub command $sub not recognized\n\n"); break; break;
             }
         }
 
@@ -83,25 +79,27 @@ class Env extends Command implements CommandInterface
      */
     private function init()
     {
-        $dotEnv = new OoEnv;
+        $this->env->loadExample();
 
-        $this->env["APP_DEBUG"]     = 'true';
-        $this->env[1]               = 'SEPARATOR';
-        $this->env['APP_HOST']      = 'localhost';
-        $this->env['APP_SCHEME']    = 'http';
-        $this->env['APP_PORT']      = '80';
-        $this->env[2]               = 'SEPARATOR';
-        $this->env["LOG"]           = 'true';
-        $this->env["LOG_CHANNEL"]   = 'true';
-        $this->env[3]               = 'SEPARATOR';
-        $this->env["DB_DRIVER"]     = 'PDO';
-        $this->env["DB_HOST"]       = '127.0.0.1';
-        $this->env["DB_PORT"]       = '3306';
-        $this->env["DB_NAME"]       = 'silo';
-        $this->env["DB_USER"]       = 'root';
-        $this->env["DB_PASS"]       = '';
+        $this->env->set('APP_DEBUG', 'true')
+                    ->set('APP_HOST', '127.0.0.1')
+                    ->set('APP_KEY', 'base64-' . base64_encode(md5(time())))
+                    ->set('APP_VERSION', '1.0.0')
+                    ->set('APP_SCHEME', 'http')
+                    ->set('APP_PORT', '8080')
 
-        return $dotEnv->init($this->env);
+                    ->set('LOG', '')
+                    ->set('LOG_CHANNEL', '')
+
+                    ->set('DB_DRIVER', 'PDO')
+                    ->set('DB_HOST', '127.0.0.1')
+                    ->set('DB_PORT', '3306')
+                    ->set('DB_NAME', 'silo')
+                    ->set('DB_USER', 'root')
+                    ->set('DB_PASS', '')
+                    ->update();
+
+        $this->output->writeLn("\n Silo environment has been initialized\n\n", "green");
     }
 
     /**
@@ -111,7 +109,9 @@ class Env extends Command implements CommandInterface
      */
     private function generateAppKey()
     {
-        return $this->env["APP_KEY"]   =  'base64-' . base64_encode(md5(time()));
+        $this->env->load();
+        $this->env->set('APP_KEY', 'base64-' . base64_encode(md5(time())))->update();
+        return $this->output->writeLn("\n Env key has been generated successfully \n\n", 'green');
     }
 
     /**
@@ -121,9 +121,9 @@ class Env extends Command implements CommandInterface
      */
     private function setDevelopmentMode()
     {
-        $this->env["APP_ENV"] = 'dev';
-        $this->env["APP_KEY"] = _env("APP_KEY"); // don't change app key when switching env
-        $this->init();
+        $this->env->load();
+        $this->env->set('APP_ENV', 'dev')->set('APP_KEY', _env("APP_KEY"))->update();
+
         return $this->output->writeLn("\n Silo environment has been set to Development \n\n");
     }
 
@@ -134,9 +134,9 @@ class Env extends Command implements CommandInterface
      */
     private function setProductionMode()
     {
-        $this->env["APP_ENV"] = 'pro';
-        $this->env["APP_KEY"] = _env("APP_KEY"); // don't change app key when switching env
-        $this->init();
+        $this->env->load();
+        $this->env->set('APP_ENV', 'pro')->set('APP_KEY', _env("APP_KEY"))->update();
+
         return $this->output->writeLn("\n Silo environment has been set to Production \n\n");
     }
 
@@ -150,10 +150,11 @@ class Env extends Command implements CommandInterface
         $this->output->writeLn("\n [ env ] \n\n", 'yellow');
         $this->output->writeLn("   env command to show and update application environment.\n\n");
         $this->output->writeLn("  sub commands : \n\n", 'yellow');
-        $this->output->writeLn("    init  : initialize environment creating .env file.\n");
-        $this->output->writeLn("    dev   : set application to development mode.\n");
-        $this->output->writeLn("    pro   : set application to production mode.\n\n");
-        $this->output->writeLn("  options : \n\n", 'yellow');
+        $this->output->writeLn("    init     : initialize environment creating .env file.\n");
+        $this->output->writeLn("    keygen  : generate new environment key.\n");
+        $this->output->writeLn("    dev     : set application to development mode.\n");
+        $this->output->writeLn("    pro     : set application to production mode.\n\n");
+        $this->output->writeLn("  options   : \n\n", 'yellow');
         $this->output->writeLn("    no options for this command.\n\n");
 
         return '';

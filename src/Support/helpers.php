@@ -52,7 +52,8 @@ if(!function_exists('_env'))
      */
     function _env(string $key, string $default = NULL) : ?string
     {
-        $env        = new Env(explode('vendor', __DIR__)[0]);
+        //$env        = new Env(explode('vendor', __DIR__)[0]);
+        $env        = new Env('C:\Users\dell\Desktop\own\silo\lotfio-silo');
                     $env->load();
         return      $env->get($key, $default);
     }
