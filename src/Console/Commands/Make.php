@@ -13,70 +13,79 @@ namespace Omniscient\Console\Commands;
  * @time      Generated at 30-08-2019 by conso
  */
 
-use Conso\Command;
+use Conso\Conso;
 use OOFile\{Conf, File};
-use Conso\Contracts\CommandInterface;
-use Conso\Exceptions\{OptionNotFoundException, FlagNotFoundException, RunTimeException};
+use Conso\Command as BaseCommand;
+use Conso\Exceptions\InputException;
+use Conso\Contracts\{CommandInterface,InputInterface,OutputInterface};
 
-class Make extends Command implements CommandInterface
+class Make extends BaseCommand implements CommandInterface
 {
     /**
-     * command flags
+     * sub commands
      *
      * @var array
      */
-    protected $flags = ['-c', '--crud'];
+    protected $sub = array(
+        'controller','model','view'
+    );
 
     /**
-     * environment object
+     * flags
      *
      * @var array
      */
-    private $env;
+    protected $flags = array(
+        '-c', '--crud'
+    );
 
     /**
-     * command description method
+     * command help
      *
-     * @return string
+     * @var string
      */
-    protected $description = "make command to create controllers, models, views and more.";
+    protected $help  = array(
+    );
 
     /**
-     * command execute method
+     * command description
      *
-     * @param  string $sub
-     * @param  array  $options
-     * @param  array  $flags
+     * @var string
+     */
+    protected $description = 'make command to create controllers, models, views and more.';
+
+    /**
+     * execute method
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param Conso $app
      * @return void
      */
-    public function execute(string $sub, array $options, array $flags)
+    public function execute(InputInterface $input, OutputInterface $output, Conso $app) : void
     {
-        switch($sub)
-        {
-            case 'controller'   : $this->createController($options, $flags);          exit; break;
-            case 'model'        : $this->createModel();               exit; break;
-            case 'view'         : $this->createView();                exit; break;
-            default             : throw new RunTimeException("Error sub command $sub not recognized"); break;
-        }
+        $this->displayCommandHelp($input, $output, $app);
     }
-
 
     /**
      * create controller method
      *
      * @return void
      */
-    public function createController(array $options, array $flags)
+    public function controller(InputInterface $input, OutputInterface $output)
     {
+        $options = $input->options();
+        $flags   = $input->flags();
+
         if(!isset($options[0]))
-            throw new RunTimeException("controller name is required");
+            throw new \Exception("controller name is required");
 
         $name       = ucfirst($options[0]);
         $controller = Conf::path('controllers') . $name . '.php';
 
         $file = new File;
         if($file->exists($controller)) // already exists
-            throw new RunTimeException("controller $controller already exists.");
+            throw new \Exception("controller $controller already exists.");
 
         // stub file
         $stub = (isset($flags[0]) && in_array($flags[0], $this->flags)) ? 'crud': 'controller';
@@ -85,32 +94,8 @@ class Make extends Command implements CommandInterface
 
         if($file->create($controller))
            if($file->write($controller, $stubController))
-                die($this->output->writeLn("\n $name created successfully \n", 'yellow'));
+                die($output->writeLn("\n $name created successfully \n", 'yellow'));
 
-        $this->output->writeLn("error creating $name controller .\n\n", "red");
-    }
-
-
-     /**
-     * command help method.
-     *
-     * @return string
-     */
-    public function help()
-    {
-        $this->output->writeLn("\n [ make ] \n\n", 'yellow');
-        $this->output->writeLn("   make command to create controllers, models, views and more.\n\n");
-        $this->output->writeLn("  sub commands: \n\n", 'yellow');
-        $this->output->writeLn("    controller : initialize environment creating .env file.\n");
-        $this->output->writeLn("    model      : generate new environment key.\n");
-        $this->output->writeLn("    view       : set application to development mode.\n\n");
-
-        $this->output->writeLn("  options: \n\n", 'yellow');
-        $this->output->writeLn("    name       : controller, model or view name.\n\n");
-
-        $this->output->writeLn("  Flags: \n\n", 'yellow');
-        $this->output->writeLn("    -c, --crud : crud controller.\n\n");
-
-        return '';
+        $output->writeLn("error creating $name controller .\n\n", "red");
     }
 }

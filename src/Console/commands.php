@@ -11,6 +11,6 @@
  */
 
 $silo->command('env'  , "Omniscient\\Console\\Commands\\Env");
-$silo->command('serve', "Omniscient\\Console\\Commands\\Serve");
+$silo->command('start', "Omniscient\\Console\\Commands\\Start");
 $silo->command('make' , "Omniscient\\Console\\Commands\\Make");
-$silo->command('asset', "Omniscient\\Console\\Commands\\Asset");
+$silo->command('asset', "Omniscient\\Console\\Commands\\Assets");

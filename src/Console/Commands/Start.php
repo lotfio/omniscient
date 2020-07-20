@@ -13,19 +13,44 @@ namespace Omniscient\Console\Commands;
  * @time      Generated at 28-08-2019 by conso
  */
 
-use Conso\Command;
-use Conso\Contracts\CommandInterface;
-use Conso\Exceptions\{OptionNotFoundException, FlagNotFoundException};
 use OoFile\Conf;
+use Conso\Conso;
+use Conso\Command as BaseCommand;
+use Conso\Exceptions\InputException;
+use Conso\Contracts\{CommandInterface,InputInterface,OutputInterface};
 
-class Serve extends Command implements CommandInterface
+class Start extends BaseCommand implements CommandInterface
 {
     /**
-     * command flags
+     * sub commands
      *
      * @var array
      */
-    protected $flags = [];
+    protected $sub = array(
+    );
+
+    /**
+     * flags
+     *
+     * @var array
+     */
+    protected $flags = array(
+    );
+
+    /**
+     * command help
+     *
+     * @var string
+     */
+    protected $help  = array(
+    );
+
+    /**
+     * command description method
+     *
+     * @return string
+     */
+    protected $description = "Start command to start the build in php server.";
 
     /**
      * server ip address
@@ -42,13 +67,6 @@ class Serve extends Command implements CommandInterface
     protected $port = "8080";
 
     /**
-     * command description method
-     *
-     * @return string
-     */
-    protected $description = "Serve command to start the build in php server.";
-
-    /**
      * command execute method
      *
      * @param  string $sub
@@ -56,7 +74,7 @@ class Serve extends Command implements CommandInterface
      * @param  array  $flags
      * @return void
      */
-    public function execute(string $sub, array $options, array $flags)
+    public function execute(InputInterface $input, OutputInterface $output, Conso $app) : void
     {
         /**
          * check for available port
@@ -67,10 +85,10 @@ class Serve extends Command implements CommandInterface
         $port    = _env('APP_PORT',$this->port);
         $command = "php -S " . $host . ":" . $port . " -t " . Conf::path('pub');
 
-        $this->output->writeLn("\n Starting development server : \n", "yellow");
-        $this->output->writeLn(" You can now visit <http://$host:$port> \n\n", "yellow");
+        $output->writeLn("\n Starting development server : \n", "yellow");
+        $output->writeLn(" You can now visit <http://$host:$port> \n", "yellow");
 
-        return  passthru($command);
+        passthru($command);
     }
 
     /**
@@ -93,22 +111,5 @@ class Serve extends Command implements CommandInterface
             return $this->port;
 
         }catch(\Exception $e){}
-    }
-
-    /**
-     * command help method.
-     *
-     * @return string
-     */
-    public function help()
-    {
-        $this->output->writeLn("\n [ serve ] \n\n", 'yellow');
-        $this->output->writeLn("   serve command to start the build in php server.\n\n");
-        $this->output->writeLn("  sub commands : \n\n", 'yellow');
-        $this->output->writeLn("    no sub comands for this command.\n\n");
-        $this->output->writeLn("  options : \n\n", 'yellow');
-        $this->output->writeLn("    no options for this command.\n\n");
-
-        return '';
     }
 }

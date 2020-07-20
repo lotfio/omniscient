@@ -13,47 +13,60 @@ namespace Omniscient\Console\Commands;
  * @time      Generated at 12-09-2019 by conso
  */
 
-use Conso\Command;
 use OoFile\Conf;
-use Conso\Contracts\CommandInterface;
-use Conso\Exceptions\{OptionNotFoundException, FlagNotFoundException, RunTimeException};
+use Conso\Conso;
+use Conso\Command as BaseCommand;
+use Conso\Exceptions\InputException;
+use Conso\Contracts\{CommandInterface,InputInterface,OutputInterface};
 
-class Assets extends Command implements CommandInterface
+class Assets extends BaseCommand implements CommandInterface
 {
-    /**
-     * command flags
+   /**
+     * sub commands
      *
      * @var array
      */
-    protected $flags = [];
+    protected $sub = array(
+        'publish'
+    );
+
+    /**
+     * flags
+     *
+     * @var array
+     */
+    protected $flags = array(
+    );
+
+    /**
+     * command help
+     *
+     * @var string
+     */
+    protected $help  = array(
+        "sub commands" => array(
+            "publish"  => 'publish assets to public folder'
+        )
+    );
 
     /**
      * command description method
      *
      * @return string
      */
-    protected $description = "Assets command to publish, delete, update assets.";
+    protected $description = "Asset command to publish, delete, update assets.";
 
     /**
-     * command execute method
+     * execute method
      *
-     * @param  string $sub
-     * @param  array  $options
-     * @param  array  $flags
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param Conso $app
      * @return void
      */
-    public function execute(string $sub, array $options, array $flags)
+    public function execute(InputInterface $input, OutputInterface $output, Conso $app) : void
     {
-        if(!empty($sub))
-        {
-            switch($sub)
-            {
-                case 'publish'  : $this->publishAssets();  exit; break;
-                default         : throw new RunTimeException("Error sub command $sub not recognized\n\n"); break;
-            }
-        }
-
-        $this->output->writeLn("\n".$this->help()."\n");
+        $this->displayCommandHelp($input, $output, $app);
     }
 
     /**
@@ -61,13 +74,13 @@ class Assets extends Command implements CommandInterface
      *
      * @return void
      */
-    private function publishAssets()
+    public function publish(InputInterface $input, OutputInterface $output)
     {
         $assets = Conf::path('assets');
         $pub    = Conf::path('pub');
 
         if(!is_writable($pub))
-            throw new RunTimeException("$pub Directory is not writable \n\n");
+            throw new \Exception("$pub Directory is not writable \n\n");
 
         chdir($pub); // switch to public folder
 
@@ -75,42 +88,8 @@ class Assets extends Command implements CommandInterface
             (PHP_OS == 'WINNT') ? system("rmdir assets") : unlink("assets");
 
         if(symlink($assets, "assets"))
-            return $this->output->writeLn("\n assets has been published to the public folder.\n\n", "green");
+            return $output->writeLn("\n assets has been published to the public folder.\n\n", "green");
 
-        throw new RunTimeException("\error publishing assets to public folder.\n\n", "red");
-    }
-
-    /**
-     * delete tree method
-     *
-     * @param  string $dir
-     * @return void
-     */
-    private function delTree($dir)
-    {
-        $files = array_diff(scandir($dir), array('.', '..'));
-
-        foreach ($files as $file) {
-            (is_dir("$dir/$file")) ? $this->delTree("$dir/$file") : unlink("$dir/$file");
-        }
-
-        return rmdir($dir);
-    }
-
-    /**
-     * command help method.
-     *
-     * @return string
-     */
-    public function help()
-    {
-        $this->output->writeLn("\n [ assets ] \n\n", 'yellow');
-        $this->output->writeLn("   assets command.\n\n");
-        $this->output->writeLn("  sub commands : \n\n", 'yellow');
-        $this->output->writeLn("    publish  :  create a symlink to assets on the public filder.\n\n");
-        $this->output->writeLn("  options : \n\n", 'yellow');
-        $this->output->writeLn("    no options for this command.\n\n");
-
-        return '';
+        throw new \Exception("\error publishing assets to public folder.\n\n", "red");
     }
 }

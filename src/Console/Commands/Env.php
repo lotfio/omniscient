@@ -14,32 +14,57 @@ namespace Omniscient\Console\Commands;
  */
 
 use OoFile\Env as OoEnv;
-use Conso\Command;
-use Conso\Contracts\CommandInterface;
-use Conso\Exceptions\{OptionNotFoundException, FlagNotFoundException, RunTimeException};
+use Conso\Conso;
+use Conso\Command as BaseCommand;
+use Conso\Exceptions\InputException;
+use Conso\Contracts\{CommandInterface,InputInterface,OutputInterface};
 
-class Env extends Command implements CommandInterface
+class Env extends BaseCommand implements CommandInterface
 {
     /**
-     * command flags
+     * sub commands
      *
      * @var array
      */
-    protected $flags = [];
+    protected $sub = array(
+        'init','keygen','dev','pro'
+    );
+
+    /**
+     * flags
+     *
+     * @var array
+     */
+    protected $flags = array(
+    );
+
+    /**
+     * command help
+     *
+     * @var string
+     */
+    protected $help  = array(
+        "sub commands" => array(
+            "init"   => "initialize environment and create .env file",
+            "keygen" => "generate a new application key",
+            "dev"    => "set development mode",
+            "pro"    => "set production mode"
+        )
+    );
+
+    /**
+     * command description
+     *
+     * @var string
+     */
+    protected $description = 'Env command to show and update application environment.';
 
     /**
      * environment object
      *
      * @var array
      */
-    private $env;
-
-    /**
-     * command description method
-     *
-     * @return string
-     */
-    protected $description = "Env command to show and update application environment.";
+    private $envPath = 'C:\Users\dell\Desktop\own\silo\lotfio-silo';
 
     /**
      * command execute method
@@ -49,27 +74,13 @@ class Env extends Command implements CommandInterface
      * @param  array  $flags
      * @return void
      */
-    public function execute(string $sub, array $options, array $flags)
+    public function execute(InputInterface $input, OutputInterface $output, Conso $app) : void
     {
-        // set up env object
-        $this->env = new  OoEnv('C:\Users\dell\Desktop\own\silo\lotfio-silo');
+        $output->writeLn("\n Your application is on ");
 
-        if(!empty($sub))
-        {
-            switch($sub)
-            {
-                case 'init'         : $this->init();                exit; break;
-                case 'keygen'       : $this->generateAppKey();      exit; break;
-                case 'dev'          : $this->setDevelopmentMode();  exit; break;
-                case 'pro'          : $this->setProductionMode();   exit;  break;
-                default             : throw new RunTimeException("Error sub command $sub not recognized\n\n"); break; break;
-            }
-        }
-
-        $this->output->writeLn("\n Your application is on ");
-        _env('APP_ENV') == 'dev' ?
-            $this->output->writeLn("development mode\n\n", 'green')
-        :   $this->output->writeLn("production mode\n\n", 'green');
+        _env('APP_ENV') == 'dev'
+                        ? $output->writeLn("development mode\n", 'green')
+                        : $output->writeLn("production mode\n", 'green');
     }
 
     /**
@@ -77,11 +88,12 @@ class Env extends Command implements CommandInterface
      *
      * @return void
      */
-    private function init()
+    public function init(InputInterface $input, OutputInterface $output)
     {
-        $this->env->loadExample();
+        $env = new  OoEnv($this->envPath);
+        $env->loadExample();
 
-        $this->env->set('APP_DEBUG', 'true')
+        $env->set('APP_DEBUG', 'true')
                     ->set('APP_HOST', '127.0.0.1')
                     ->set('APP_KEY', 'base64-' . base64_encode(md5(time())))
                     ->set('APP_VERSION', '1.0.0')
@@ -99,7 +111,7 @@ class Env extends Command implements CommandInterface
                     ->set('DB_PASS', '')
                     ->update();
 
-        $this->output->writeLn("\n Silo environment has been initialized\n\n", "green");
+        $output->writeLn("\n Silo environment has been initialized\n", "green");
     }
 
     /**
@@ -107,11 +119,12 @@ class Env extends Command implements CommandInterface
      *
      * @return void
      */
-    private function generateAppKey()
+    public function keygen(InputInterface $input, OutputInterface $output)
     {
-        $this->env->load();
-        $this->env->set('APP_KEY', 'base64-' . base64_encode(md5(time())))->update();
-        return $this->output->writeLn("\n Env key has been generated successfully \n\n", 'green');
+        $env = new  OoEnv($this->envPath);
+        $env->load();
+        $env->set('APP_KEY', 'base64-' . base64_encode(md5(time())))->update();
+        return $output->writeLn("\n Env key has been generated successfully \n\n", 'green');
     }
 
     /**
@@ -119,12 +132,13 @@ class Env extends Command implements CommandInterface
      *
      * @return void
      */
-    private function setDevelopmentMode()
+    public function dev(InputInterface $input, OutputInterface $output)
     {
-        $this->env->load();
-        $this->env->set('APP_ENV', 'dev')->set('APP_KEY', _env("APP_KEY"))->update();
+        $env = new  OoEnv($this->envPath);
+        $env->load();
+        $env->set('APP_ENV', 'dev')->set('APP_KEY', _env("APP_KEY"))->update();
 
-        return $this->output->writeLn("\n Silo environment has been set to Development \n\n");
+        return $output->writeLn("\n Silo environment has been set to Development mode \n", 'green');
     }
 
     /**
@@ -132,31 +146,12 @@ class Env extends Command implements CommandInterface
      *
      * @return void
      */
-    private function setProductionMode()
+    public function pro(InputInterface $input, OutputInterface $output)
     {
-        $this->env->load();
-        $this->env->set('APP_ENV', 'pro')->set('APP_KEY', _env("APP_KEY"))->update();
+        $env = new  OoEnv($this->envPath);
+        $env->load();
+        $env->set('APP_ENV', 'pro')->set('APP_KEY', _env("APP_KEY"))->update();
 
-        return $this->output->writeLn("\n Silo environment has been set to Production \n\n");
-    }
-
-     /**
-     * command help method.
-     *
-     * @return string
-     */
-    public function help()
-    {
-        $this->output->writeLn("\n [ env ] \n\n", 'yellow');
-        $this->output->writeLn("   env command to show and update application environment.\n\n");
-        $this->output->writeLn("  sub commands : \n\n", 'yellow');
-        $this->output->writeLn("    init     : initialize environment creating .env file.\n");
-        $this->output->writeLn("    keygen  : generate new environment key.\n");
-        $this->output->writeLn("    dev     : set application to development mode.\n");
-        $this->output->writeLn("    pro     : set application to production mode.\n\n");
-        $this->output->writeLn("  options   : \n\n", 'yellow');
-        $this->output->writeLn("    no options for this command.\n\n");
-
-        return '';
+        return $output->writeLn("\n Silo environment has been set to Production \n", 'red');
     }
 }
