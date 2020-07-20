@@ -1,0 +1,59 @@
+<?php namespace App\Http\Controllers;
+
+/**
+ * @author    <contact@lotfio.net>
+ * @package   Silo PHP framework
+ * @version   1.0.0
+ * @license   MIT
+ * @category  Framework
+ * @copyright 2019 Lotfio Lakehal
+ *
+ */
+
+/**
+* crud controller
+*
+* @return void
+*/
+class #name#
+{
+    /**
+     * create method
+     *
+     * @return void
+     */
+    public function create()
+    {
+        return "#name# create action";
+    }
+
+    /**
+     * read method
+     *
+     * @return void
+     */
+    public function read()
+    {
+        return "#name# read action";
+    }
+
+    /**
+     * update method
+     *
+     * @return void
+     */
+    public function update()
+    {
+        return "#name# update action";
+    }
+
+    /**
+     * delete method
+     *
+     * @return void
+     */
+    public function delete()
+    {
+        return "#name# delete action";
+    }
+}

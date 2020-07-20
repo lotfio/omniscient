@@ -23,6 +23,7 @@ class View
     public function render(string $file, $data = NULL)
     {
         $caprice  = new Compiler(Conf::path("views"), Conf::path("cache") . "views");
+        $caprice->extendDirectives(dirname(__DIR__) . '/Caprice/');
 
         if(_env("APP_ENV") != "dev")
             $caprice->setProductionMode();
