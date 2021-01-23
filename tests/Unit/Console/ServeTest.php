@@ -9,6 +9,8 @@
  * @copyright 2019 Lotfio Lakehal
  */
 
+namespace Tests\Unit\Console;
+
 use PHPUnit\Framework\TestCase;
 
 class ServeTest extends TestCase
